@@ -2,18 +2,31 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Wallet Address Book</title>
+<title>Account Settings - Payment Methods</title>
 
 <style>
 body{
-    font-family: Arial;
+    font-family:Arial;
     background:#f4f6f8;
-    text-align:center;
+    margin:0;
 }
 
+/* Top Nav */
+.nav{
+    background:#222;
+    color:white;
+    padding:15px;
+    text-align:right;
+}
+
+.profile{
+    cursor:pointer;
+}
+
+/* Container */
 .container{
     width:400px;
-    margin:auto;
+    margin:30px auto;
     background:white;
     padding:20px;
     border-radius:10px;
@@ -22,126 +35,121 @@ body{
 
 button{
     padding:10px 15px;
-    margin:5px;
-    cursor:pointer;
     border:none;
     background:#4CAF50;
     color:white;
     border-radius:5px;
+    cursor:pointer;
 }
 
-input, select{
-    width:90%;
+input,select{
+    width:95%;
     padding:8px;
     margin:8px 0;
 }
 
-#addressForm{
+.hidden{
     display:none;
 }
 
-.address-item{
+.method{
     background:#eee;
-    margin:5px;
     padding:10px;
+    margin:5px;
     border-radius:5px;
-    cursor:pointer;
-}
-
-.address-item:hover{
-    background:#dcdcdc;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<h2>Wallet Dashboard</h2>
-
 <!-- Step 1 -->
-<button onclick="showSend()">Send</button>
-<button>Receive</button>
+<div class="nav">
+    <span class="profile" onclick="openSettings()">👤 Profile</span>
+</div>
 
-<div id="sendSection" style="display:none">
+<div class="container hidden" id="settings">
 
-    <h3>Send Crypto</h3>
+<h2>Settings</h2>
 
-    <!-- Step 2 -->
-    <button onclick="showForm()">Add Address</button>
+<!-- Step 2 & 3 -->
+<button onclick="openPayments()">Payment Methods</button>
 
-    <!-- Step 3-7 -->
-    <div id="addressForm">
-        <input id="label" placeholder="Label / Name">
-        <input id="wallet" placeholder="Wallet Address">
-        
-        <select id="network">
-            <option>Bitcoin</option>
-            <option>Ethereum</option>
-            <option>Polygon</option>
-        </select>
+<div id="paymentsSection" class="hidden">
 
-        <button onclick="saveAddress()">Save Address</button>
-    </div>
+<h3>Payment Methods</h3>
 
-    <h3>Address Book</h3>
-    <div id="list"></div>
+<!-- Step 4 -->
+<button onclick="showForm()">+ Add Payment Method</button>
+
+<!-- Step 5-7 -->
+<div id="formSection" class="hidden">
+
+<select id="type">
+<option value="">Select Method</option>
+<option>Bank Account</option>
+<option>Debit Card</option>
+</select>
+
+<input id="name" placeholder="Name on Account">
+
+<input id="number" placeholder="Account/Card Number">
+
+<input id="expiry" placeholder="Expiry (MM/YY) - for card">
+
+<button onclick="addMethod()">Add</button>
+
+</div>
+
+<h4>Saved Methods</h4>
+<div id="list"></div>
 
 </div>
 
 </div>
 
 <script>
-let addressBook=[];
+let methods=[];
 
-// Show send section
-function showSend(){
-    document.getElementById("sendSection").style.display="block";
+function openSettings(){
+    document.getElementById("settings").classList.remove("hidden");
 }
 
-// Show add form
+function openPayments(){
+    document.getElementById("paymentsSection").classList.remove("hidden");
+}
+
 function showForm(){
-    document.getElementById("addressForm").style.display="block";
+    document.getElementById("formSection").classList.remove("hidden");
 }
 
-// Save address
-function saveAddress(){
-    let label=document.getElementById("label").value;
-    let wallet=document.getElementById("wallet").value;
-    let network=document.getElementById("network").value;
+function addMethod(){
+    let type=document.getElementById("type").value;
+    let name=document.getElementById("name").value;
+    let number=document.getElementById("number").value;
 
-    if(!label || !wallet){
-        alert("Fill all fields");
+    if(!type || !name || !number){
+        alert("Fill all details");
         return;
     }
 
-    let data={label,wallet,network};
-    addressBook.push(data);
-
-    renderList();
-
-    alert("Address Saved!");
-
-    document.getElementById("label").value="";
-    document.getElementById("wallet").value="";
+    // Step 8 verification
+    if(confirm("Verify payment method?")){
+        let data={type,name,number};
+        methods.push(data);
+        render();
+        alert("Payment Method Added!");
+    }
 }
 
-// Render list
-function renderList(){
+function render(){
     let list=document.getElementById("list");
     list.innerHTML="";
 
-    addressBook.forEach((item,i)=>{
+    methods.forEach(m=>{
         let div=document.createElement("div");
-        div.className="address-item";
-        div.innerHTML=`<b>${item.label}</b><br>${item.wallet}<br>${item.network}`;
-        
-        // Step 8 confirm click
-        div.onclick=()=>{
-            alert("Selected: "+item.label);
-        };
-
+        div.className="method";
+        div.innerHTML=`${m.type}<br>${m.name}<br>****${m.number.slice(-4)}`;
         list.appendChild(div);
     });
 }
