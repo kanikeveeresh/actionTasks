@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Wallet Address Book</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:#f4f6f8;
+    text-align:center;
+}
+
+.container{
+    width:400px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+button{
+    padding:10px 15px;
+    margin:5px;
+    cursor:pointer;
+    border:none;
+    background:#4CAF50;
+    color:white;
+    border-radius:5px;
+}
+
+input, select{
+    width:90%;
+    padding:8px;
+    margin:8px 0;
+}
+
+#addressForm{
+    display:none;
+}
+
+.address-item{
+    background:#eee;
+    margin:5px;
+    padding:10px;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.address-item:hover{
+    background:#dcdcdc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Wallet Dashboard</h2>
+
+<!-- Step 1 -->
+<button onclick="showSend()">Send</button>
+<button>Receive</button>
+
+<div id="sendSection" style="display:none">
+
+    <h3>Send Crypto</h3>
+
+    <!-- Step 2 -->
+    <button onclick="showForm()">Add Address</button>
+
+    <!-- Step 3-7 -->
+    <div id="addressForm">
+        <input id="label" placeholder="Label / Name">
+        <input id="wallet" placeholder="Wallet Address">
+        
+        <select id="network">
+            <option>Bitcoin</option>
+            <option>Ethereum</option>
+            <option>Polygon</option>
+        </select>
+
+        <button onclick="saveAddress()">Save Address</button>
+    </div>
+
+    <h3>Address Book</h3>
+    <div id="list"></div>
+
+</div>
+
+</div>
+
+<script>
+let addressBook=[];
+
+// Show send section
+function showSend(){
+    document.getElementById("sendSection").style.display="block";
+}
+
+// Show add form
+function showForm(){
+    document.getElementById("addressForm").style.display="block";
+}
+
+// Save address
+function saveAddress(){
+    let label=document.getElementById("label").value;
+    let wallet=document.getElementById("wallet").value;
+    let network=document.getElementById("network").value;
+
+    if(!label || !wallet){
+        alert("Fill all fields");
+        return;
+    }
+
+    let data={label,wallet,network};
+    addressBook.push(data);
+
+    renderList();
+
+    alert("Address Saved!");
+
+    document.getElementById("label").value="";
+    document.getElementById("wallet").value="";
+}
+
+// Render list
+function renderList(){
+    let list=document.getElementById("list");
+    list.innerHTML="";
+
+    addressBook.forEach((item,i)=>{
+        let div=document.createElement("div");
+        div.className="address-item";
+        div.innerHTML=`<b>${item.label}</b><br>${item.wallet}<br>${item.network}`;
+        
+        // Step 8 confirm click
+        div.onclick=()=>{
+            alert("Selected: "+item.label);
+        };
+
+        list.appendChild(div);
+    });
+}
+</script>
+
+</body>
+</html>
